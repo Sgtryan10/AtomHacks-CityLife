@@ -16,12 +16,8 @@ var steer_direction  # Current direction of steering
 
 @export var is_active = true
 
-var boxes = 0
-
-func add_box():
-	boxes += 1
-	
 func _physics_process(delta: float) -> void:
+	
 	if is_active:
 		$Camera2D.enabled = true
 		acceleration = Vector2.ZERO
