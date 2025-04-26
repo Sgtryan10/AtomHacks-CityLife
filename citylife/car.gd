@@ -1,15 +1,13 @@
 extends CharacterBody2D
 
-@onready var player = $"../Player"
-
-@export var steering_angle = 25  # Maximum angle for steering the car's wheels
+@export var steering_angle = 45  # Maximum angle for steering the car's wheels
 @export var engine_power = 100  # How much force the engine can apply for acceleration
 @export var friction = -55  # The friction coefficient that slows down the car
 @export var drag = -0.06  # Air drag coefficient that also slows down the car
 @export var braking = -450  # Braking power when the brake input is applied
 @export var max_speed_reverse = 250  # Maximum speed limit in reverse
 @export var slip_speed = 400  # Speed above which the car's traction decreases (for drifting)
-@export var traction_fast = 2.5  # Traction factor when the car is moving fast (affects control)
+@export var traction_fast = 5  # Traction factor when the car is moving fast (affects control)
 @export var traction_slow = 10  # Traction factor when the car is moving slow (affects control)
 
 var wheel_base = 65  # Distance between the front and back axle of the car
@@ -18,10 +16,16 @@ var steer_direction  # Current direction of steering
 
 @export var is_active = true
 
+var boxes = 0
+
+func add_box():
+	boxes += 1
+	
 func _physics_process(delta: float) -> void:
 	if is_active:
 		$Camera2D.enabled = true
 		acceleration = Vector2.ZERO
+		
 		get_input()  # Take input from player
 		calculate_steering(delta)  # Apply turning logic based on steering
 	else:
@@ -31,8 +35,11 @@ func _physics_process(delta: float) -> void:
 	apply_friction(delta)  # Apply friction forces to the car
 	move_and_slide()  # Move the car and handle collisions
 	
+	# Apply deceleration force if no input is given
+	if acceleration == Vector2.ZERO:
+		velocity = velocity * 0.95  # Gradually slow down the car
 
-#function to handle input from the user and apply effects to the car's movement
+# Function to handle input from the user and apply effects to the car's movement
 func get_input():
 	# Get steering input and translate it to an angle
 	var turn = Input.get_axis("ui_left", "ui_right")
@@ -45,19 +52,16 @@ func get_input():
 	# If brake is pressed, apply braking force
 	if Input.is_action_pressed("ui_down"):
 		acceleration = transform.x * braking
+		
 
-#Function to apply friction forces to the car, making it 'slide' to a halt
+# Function to apply friction forces to the car, making it 'slide' to a halt
 func apply_friction(delta):
-	# If there is no input and speed is very low, just stop to prevent endless sliding
-	if acceleration == Vector2.ZERO and velocity.length() < 50:
-		velocity = Vector2.ZERO
-	# Calculate friction force and air drag based on current velocity, and apply it
+	# Apply friction force and drag based on current velocity
 	var friction_force = velocity * friction * delta
 	var drag_force = velocity * velocity.length() * drag * delta
 	# Add the forces to the acceleration
 	acceleration += drag_force + friction_force
 
-	
 # Function to calculate the steering effect
 func calculate_steering(delta):
 	# Calculate the positions of the rear and front wheel
