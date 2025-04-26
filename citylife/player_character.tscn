@@ -1,0 +1,64 @@
+[gd_scene load_steps=8 format=3 uid="uid://co3ea531vswr6"]
+
+[ext_resource type="Script" uid="uid://b7yp7f1q1mcp2" path="res://car.gd" id="1_5up26"]
+[ext_resource type="Texture2D" uid="uid://2c0wxesk3lpe" path="res://carblack.png" id="2_5up26"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4akcp"]
+size = Vector2(46, 91)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_5up26"]
+
+[sub_resource type="Gradient" id="Gradient_5up26"]
+offsets = PackedFloat32Array(0.104072, 0.19457, 0.348416, 0.511312, 0.660634, 0.782805, 0.959276)
+colors = PackedColorArray(0.223529, 0.172549, 0.0980392, 1, 0.282353, 0.219608, 0.121569, 1, 0.337255, 0.262745, 0.14902, 1, 0.396078, 0.305882, 0.172549, 1, 0.45098, 0.34902, 0.196078, 1, 0.509804, 0.392157, 0.223529, 1, 0.509804, 0.392157, 0.223529, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_4akcp"]
+gradient = SubResource("Gradient_5up26")
+width = 12
+height = 12
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_0hvvw"]
+particle_flag_disable_z = true
+emission_shape = 6
+emission_ring_axis = Vector3(0, 0, 1)
+emission_ring_height = 1.0
+emission_ring_radius = 3.5
+emission_ring_inner_radius = 2.0
+emission_ring_cone_angle = 90.0
+gravity = Vector3(0, 0, 0)
+
+[node name="PlayerCharacter" type="CharacterBody2D"]
+motion_mode = 1
+script = ExtResource("1_5up26")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 0.3)
+rotation = 1.5708
+shape = SubResource("RectangleShape2D_4akcp")
+
+[node name="Sprite2D" type="Sprite2D" parent="CollisionShape2D"]
+position = Vector2(0, 0.5)
+texture = ExtResource("2_5up26")
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="CollisionShape2D/Sprite2D"]
+z_index = -1
+material = SubResource("CanvasItemMaterial_5up26")
+position = Vector2(-15.3, 45.5)
+rotation = -1.5708
+amount = 30
+texture = SubResource("GradientTexture2D_4akcp")
+fixed_fps = 60
+interpolate = false
+fract_delta = false
+process_material = SubResource("ParticleProcessMaterial_0hvvw")
+
+[node name="GPUParticles2D2" type="GPUParticles2D" parent="CollisionShape2D/Sprite2D"]
+z_index = -1
+position = Vector2(15.7, 45.5)
+rotation = -1.5708
+texture = SubResource("GradientTexture2D_4akcp")
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_0hvvw")
